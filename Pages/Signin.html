@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../main.css">
+    <title>SIGNIN</title>
+</head>
+
+<body>
+    <nav>
+        <ul>
+            <li><a href="./Portfolio.html"><img src="../Assets/iconmonstr-home-6.svg"></a></li>
+            <li><a href="./Dashboard.html"><img src="../Assets/iconmonstr-window-11.svg"></a></li>
+        </ul>
+    </nav>
+    <main>
+        <section id="login-sec" class="sec-wrapper">
+            <div class="login-text">
+                <h1>SIGN IN</h1>
+            </div>
+            <div class="form-wrapper ">
+                <form action="" name="login-form" class="login-form" onsubmit=login()>
+                    <label for="email">
+                        <input type="email" name="email" id="login-email" placeholder="Email" required>
+                    </label>
+                    <label for="password">
+                        <input type="password" name="password" id="login-pwd" placeholder="Password" required>
+                    </label>
+                    <label for="login-submit">
+                        <input type="submit" name="login-btn" id="login-btn" value="LOGIN">
+                    </label>
+                    <p> or Sign in with</p>
+                    <div class="sm-links">
+                        <span onclick=altLogin()><img src="../Assets/google.svg" width="20px" height="20px"></span>
+                        <span onclick=altLogin()><img src="../Assets/fb.svg" width="20px" height="20px"></span>
+                        <span onclick=altLogin()><img src="../Assets/github.svg" width="20px" height="20px"></span>
+                    </div>
+                    <p>or <a href="./Register.html">Register</a></p>
+                </form>
+            </div>
+        </section>
+    </main>
+    <footer>
+        <div class="sm-links">
+            <span><a href=""></a><img src="../Assets/twitter.svg" width="50px" height="50px"></a></span>
+            <span><a href=""><img src="../Assets/linkedin.svg" width="50px" height="50px"></a></span>
+            <span><a href=""><img src="../Assets/github.svg" width="50px" height="50px"></a></span>
+        </div>
+        <div class="footer-copyright">
+            <span>&copy Copyright 2020 - MChristian</span>
+        </div>
+    </footer>
+
+    <script defer src="https://www.gstatic.com/firebasejs/7.22.0/firebase-app.js"></script>
+    <script defer src="https://www.gstatic.com/firebasejs/7.22.0/firebase-analytics.js"></script>
+    <script defer src="https://www.gstatic.com/firebasejs/7.22.0/firebase-auth.js"></script>
+    <script defer src="https://www.gstatic.com/firebasejs/7.22.0/firebase-firestore.js"></script>
+    <script defer src="https://www.gstatic.com/firebasejs/7.22.1/firebase-storage.js"></script>
+    <script defer src="../../Firebase/index.js"></script>
+
+</body>
+
+</html>

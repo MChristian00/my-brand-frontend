@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../../main.css">
+    <title>ADMIN</title>
+</head>
+
+<body onload=adminContentLoad()>
+
+    <nav>
+        <ul>
+            <li>
+                <a href="#adm-home-sec">
+                    <span> <img src="../../Assets/iconmonstr-home-6.svg" /></span>
+                </a>
+            </li>
+            <li>
+                <a href="./Profile.html"><span> <img src="../../Assets/profile copy.svg" width="28px"
+                            height="28px" /></span></a>
+            </li>
+            <li>
+                <a href="#adm-blogs-sec"><span><img src="../../Assets/writing.svg" width="28px"
+                            height="28px" /></span></a>
+            </li>
+            <li>
+                <a href="#adm-queries-sec"><span> <img src="../../Assets/question.svg" width="28px"
+                            height="28px" /></span></a>
+            </li>
+            <li>
+                <a href="./Addblog.html"><span> <img src="../../Assets/blogging.svg" width="28px"
+                            height="28px" /></span></a>
+            </li>
+            <li>
+                <span onclick=logout()><img src="../../Assets/logout.svg" width="28px" height="28px" /></span>
+            </li>
+        </ul>
+    </nav>
+    <main id="admin-page">
+        <section id="adm-home-sec" class="sec-wrapper">
+            <h1>WELCOME, ADMIN</h1>
+        </section>
+        <section id="adm-blogs-sec" class="sec-wrapper">
+            <div class="adm-dashboard">
+                <div class="dashboard-text">
+                    <h1>
+                        BLOGS
+                    </h1>
+                </div>
+                <div class="adm-dash-blogs-wrapper">
+                </div>
+            </div>
+        </section>
+        <section id="adm-queries-sec" class="sec-wrapper">
+            <div class="adm-dashboard">
+                <div class="dashboard-text">
+                    <h1>
+                        QUERIES
+                    </h1>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!--Inserting firebase-->
+    <script defer src="https://www.gstatic.com/firebasejs/7.22.0/firebase-app.js"></script>
+    <script defer src="https://www.gstatic.com/firebasejs/7.22.0/firebase-analytics.js"></script>
+    <script defer src="https://www.gstatic.com/firebasejs/7.22.0/firebase-auth.js"></script>
+    <script defer src="https://www.gstatic.com/firebasejs/7.22.0/firebase-firestore.js"></script>
+    <script defer src="https://www.gstatic.com/firebasejs/7.22.1/firebase-storage.js"></script>
+    <script defer src="../../Firebase/index.js"></script>
+
+</body>
+
+</html>
