@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../main.css">
+    <title>BLOG</title>
+</head>
+
+<body onload=loadBlog() onbeforeunload=removeDocID()>
+    <nav>
+        <ul>
+            <li><a href="./Portfolio.html"><img src="../../Assets/iconmonstr-home-6.svg"></a></li>
+            <li><a href="./Dashboard.html"><img src="../../Assets/iconmonstr-window-11.svg"></a></li>
+            <li class="logout-btn">
+                <span onclick=logout()> <img src="../../Assets/logout.svg" width="28px" height="28px" /></span>
+            </li>
+        </ul>
+    </nav>
+    <main>
+        <div class="blog-sec">
+            <div id="blog-details"></div>
+            <div class="blog-content">
+            </div>
+            <div class="comment-form">
+                <form action="" name="comment-form" onsubmit=addComment()>
+                    <label for="comment">
+                        <textarea name="comment" id="comment" placeholder="Type comment" required></textarea>
+                    </label>
+                    <label for="comment-btn">
+                        <input type="submit" name="comment-btn" id="comment-btn" value="COMMENT">
+                    </label>
+                </form>
+            </div>
+            <div class="comments-wrapper">
+                <h3>COMMENTS</h3>
+            </div>
+        </div>
+
+    </main>
+    <footer>
+        <div class="sm-links">
+            <span><a href=""><img src="../Assets/twitter.svg" width="50px" height="50px"></a></span>
+            <span><a href=""><img src="../Assets/linkedin.svg" width="50px" height="50px"></a></span>
+            <span><a href=""><img src="../Assets/github.svg" width="50px" height="50px"></a></span>
+        </div>
+        <div class="footer-copyright">
+            <span>&copy Copyright 2020 - MChristian</span>
+        </div>
+    </footer>
+
+    <script defer src="https://www.gstatic.com/firebasejs/7.22.0/firebase-app.js"></script>
+    <script defer src="https://www.gstatic.com/firebasejs/7.22.0/firebase-analytics.js"></script>
+    <script defer src="https://www.gstatic.com/firebasejs/7.22.0/firebase-auth.js"></script>
+    <script defer src="https://www.gstatic.com/firebasejs/7.22.0/firebase-firestore.js"></script>
+    <script defer src="https://www.gstatic.com/firebasejs/7.22.1/firebase-storage.js"></script>
+    <script defer src="../../Firebase/index.js"></script>
+
+</body>
+
+</html>

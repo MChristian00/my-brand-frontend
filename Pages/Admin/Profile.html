@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../../main.css">
+    <title>ADMIN | PROFILE</title>
+</head>
+
+<body onload=loadProfile()>
+    <nav>
+        <ul>
+            <li>
+                <a href="./index.html">
+                    <span> <img src="../../Assets/iconmonstr-home-6.svg" /></span>
+                </a>
+            </li>
+            <li>
+                <a href="./Addblog.html"><span> <img src="../../Assets/blogging.svg" width="28px"
+                            height="28px" /></span></a>
+            </li>
+            <li>
+                <span onclick=logout()> <img src="../../Assets/logout.svg" width="28px" height="28px" /></span>
+            </li>
+        </ul>
+    </nav>
+    <main>
+        <div id="adm-profile-sec" class="sec-wrapper">
+            <div class="profile-form">
+                <form action="">
+                    <div class="profile-image">
+                        <!-- <img src="../../Assets/profile.svg" alt="" width="120px" height="120px"> -->
+                        <label for="img-upload">
+                            <input type="file" name="profile-img" id="profile-img">
+                        </label>
+                    </div>
+                    <div class="profile-initials">
+                        <h2>PROFILE INITIALS</h2>
+                        <label for="Email">
+                            Email <input type="email" name="email" id="adm-email" placeholder="Email" required>
+                        </label>
+                        <label for="Password">
+                            Password <input type="password" name="pwd" id="adm-pwd" placeholder="Password" required>
+                        </label>
+                    </div>
+                    <div class="statistics">
+                        <h2>NUMBER OF ENTRIES</h2>
+                        <p>TOTAL BLOGS : </p><span class="blog-count"></span>
+                        <!-- <p>TOTAL LOGS : </p><span class="logs-count">12</span> -->
+                    </div>
+                    <!-- <div class="profile-reminder">
+                        <h2>SET A REMINDER</h2>
+                        <input type="datetime-local" name="datetime" id="datetime">
+                    </div> -->
+                    <div class="prof-form-btns">
+                        <label for="save-btn">
+                            <input type="submit" id="submit-btn" value="SAVE" onclick=updateProfile()>
+                        </label>
+                        <label for="reset-btn">
+                            <input type="reset" id="reset-btn" value="RESET">
+                        </label>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <!--Inserting firebase-->
+    <script defer src="https://www.gstatic.com/firebasejs/7.22.0/firebase-app.js"></script>
+    <script defer src="https://www.gstatic.com/firebasejs/7.22.0/firebase-analytics.js"></script>
+    <script defer src="https://www.gstatic.com/firebasejs/7.22.0/firebase-auth.js"></script>
+    <script defer src="https://www.gstatic.com/firebasejs/7.22.0/firebase-firestore.js"></script>
+    <script defer src="https://www.gstatic.com/firebasejs/7.22.1/firebase-storage.js"></script>
+    <script defer src="../../Firebase/index.js"></script>
+
+</body>
+
+</html>
