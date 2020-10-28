@@ -10,25 +10,20 @@ const firebaseConfig = {
 };
 
 firebase.initializeApp(firebaseConfig);
-firebase.auth().useDeviceLanguage();
-
-const db = firebase.firestore();
 const storage = firebase.storage();
 
-let googleProvider = new firebase.auth.GoogleAuthProvider();
-// let fbProvider = new firebase.auth.FacebookAuthProvider();
-// let githubProvider = new firebase.auth.GithubAuthProvider();
-// googleProvider.addScope("https://www.googleapis.com/auth/contacts.readonly");
-googleProvider.setCustomParameters({
-  login_hint: "user@example.com",
-});
-
-// fbProvider.setCustomParameters({
-//   display: "popup",
-// });
+let queryRoute = "https://my-brand-backend.herokuapp.com/api/queries/";
+// let queryRoute = "http://localhost:3000/api/queries/";
+let blogRoute = "https://my-brand-backend.herokuapp.com/api/blogs/";
+// let blogRoute = "http://localhost:3000/api/blogs/";
+let userRoute = "https://my-brand-backend.herokuapp.com/api/auth/";
+// let userRoute = "http://localhost:3000/api/auth/";
+let subscriptionRoute =
+  "https://my-brand-backend.herokuapp.com/api/subscription/";
+// let subscriptionRoute = "http://localhost:3000/api/subscription/";
 
 let User = JSON.parse(localStorage.getItem("User"));
-let URI = window.location.origin;
+let URI = `${window.location.origin}/my-brand-frontend`;
 let authProvider = localStorage.getItem("Provider");
 let Blogs = [];
 
@@ -76,18 +71,18 @@ const pfBlogElement = (blog) => {
   Desc.setAttribute("class", "blog-desc");
   let Title = document.createElement("h1");
   let img = document.createElement("img");
-  img.setAttribute("src", blog.data().BlogPic);
+  img.setAttribute("src", blog.Picture);
   img.setAttribute("width", "120px");
   img.setAttribute("height", "120px");
   let Link = document.createElement("a");
   Link.setAttribute("href", `../Pages/Blog.html`);
-  Link.setAttribute("data-key", blog.id);
+  Link.setAttribute("data-key", blog._id);
   Link.addEventListener("click", storeBlogID);
-  Link.innerHTML = blog.data().BlogTitle;
+  Link.innerHTML = blog.Title;
   let createdAt = document.createElement("p");
-  createdAt.innerHTML = blog.data().createdAt;
+  createdAt.innerHTML = blog.createdAt;
   let Summary = document.createElement("p");
-  Summary.innerHTML = blog.data().BlogContent.slice(0, 24);
+  Summary.innerHTML = blog.Content.slice(0, 24);
   wrapper.appendChild(Blog);
   Blog.appendChild(Pic);
   Pic.appendChild(img);
@@ -99,16 +94,16 @@ const pfBlogElement = (blog) => {
 };
 
 const displayLatestBlogs = async () => {
-  // Circular data error
-
-  // let Blogs = localStorage.getItem("Blogs");
-  // console.log(Blogs.docs);
-
-  await db.collection("Blogs").onSnapshot((snapshot) => {
-    snapshot.docs.forEach((blog) => {
-      pfBlogElement(blog);
+  axios
+    .get(`${blogRoute}`)
+    .then((res) => {
+      res.data.Blogs.slice(0, 4).map((blog) => {
+        pfBlogElement(blog);
+      });
+    })
+    .catch((error) => {
+      console.log(error);
     });
-  });
 };
 
 const allBlogsElement = (blog) => {
@@ -122,19 +117,19 @@ const allBlogsElement = (blog) => {
   Desc.setAttribute("class", "blog-desc");
   let Title = document.createElement("h1");
   let img = document.createElement("img");
-  img.setAttribute("src", blog.data().BlogPic);
+  img.setAttribute("src", blog.Picture);
   img.setAttribute("width", "120px");
   img.setAttribute("height", "120px");
   let Link = document.createElement("a");
   Link.setAttribute("href", `${URI}/Pages/Blog.html`);
-  Link.setAttribute("data-key", blog.id);
+  Link.setAttribute("data-key", blog._id);
   Link.addEventListener("click", storeBlogID);
-  Link.innerHTML = blog.data().BlogTitle;
+  Link.innerHTML = blog.Title;
   let createdAt = document.createElement("p");
-  createdAt.innerHTML = blog.data().createdAt;
+  createdAt.innerHTML = blog.createdAt;
   let Summary = document.createElement("p");
 
-  Summary.innerHTML = blog.data().BlogContent.slice(0, 70);
+  Summary.innerHTML = blog.Content.slice(0, 70);
 
   dashBlogsWrapper.appendChild(Blog);
   Blog.appendChild(Pic);
@@ -147,11 +142,16 @@ const allBlogsElement = (blog) => {
 };
 
 const displayAllBlogs = () => {
-  db.collection("Blogs").onSnapshot((snapshot) => {
-    snapshot.docs.forEach((blog) => {
-      allBlogsElement(blog);
+  axios
+    .get(`${blogRoute}`)
+    .then((res) => {
+      res.data.Blogs.forEach((blog) => {
+        allBlogsElement(blog);
+      });
+    })
+    .catch((error) => {
+      console.log(error);
     });
-  });
 };
 
 const adminBlogElement = (blog) => {
@@ -162,19 +162,19 @@ const adminBlogElement = (blog) => {
   let Link = document.createElement("a");
   let editLink = document.createElement("a");
   editLink.setAttribute("href", `${URI}/Pages/Admin/Addblog.html`);
-  editLink.setAttribute("data-key", blog.id);
+  editLink.setAttribute("data-key", blog._id);
   editLink.addEventListener("click", storeEditID);
   Link.setAttribute("href", `${URI}/Pages/Blog.html`);
-  Link.setAttribute("data-key", blog.id);
+  Link.setAttribute("data-key", blog._id);
   Link.addEventListener("click", storeBlogID);
-  Link.innerHTML = blog.data().BlogTitle;
+  Link.innerHTML = blog.Title;
   let editBtn = document.createElement("p");
   editBtn.setAttribute("class", "edit-btn");
   editLink.innerHTML = "Edit";
   let deleteBtn = document.createElement("p");
   deleteBtn.innerHTML = "Delete";
   deleteBtn.setAttribute("class", "delete-btn");
-  deleteBtn.setAttribute("data-key", blog.id);
+  deleteBtn.setAttribute("data-key", blog._id);
   // editBtn.setAttribute("data-key", blog.id);
   deleteBtn.addEventListener("click", deleteBlog);
 
@@ -187,26 +187,32 @@ const adminBlogElement = (blog) => {
 };
 
 const displayAllAdminBlogs = () => {
-  db.collection("Blogs").onSnapshot((snapshot) => {
-    snapshot.docs.forEach((blog) => {
-      adminBlogElement(blog);
+  axios
+    .get(`${blogRoute}`)
+    .then((res) => {
+      res.data.Blogs.forEach((blog) => {
+        adminBlogElement(blog);
+      });
+    })
+    .catch((error) => {
+      console.log(error);
     });
-  });
 };
 
 const displayQueries = () => {
-  let Queries = JSON.parse(localStorage.getItem("Queries"));
-  console.log(Queries);
-
   let dashwrapper = document.getElementsByClassName("adm-dashboard")[1];
 
   let querrieswrapper = document.createElement("div");
   querrieswrapper.setAttribute("class", "adm-dash-queries-wrapper");
 
-  db.collection("Queries")
-    .orderBy("createdAt", "desc")
-    .onSnapshot((snapshot) => {
-      snapshot.docs.forEach((query) => {
+  axios
+    .get(`${queryRoute}`, {
+      headers: {
+        Authorization: `Bearer ${User.data.Token}`,
+      },
+    })
+    .then((res) => {
+      res.data.Queries.forEach((query) => {
         let dashQuery = document.createElement("div");
         dashQuery.setAttribute("class", "dash-query");
         let queryDesc = document.createElement("div");
@@ -217,12 +223,12 @@ const displayQueries = () => {
         let createdAt = document.createElement("p");
 
         queryLink.setAttribute("href", "../Admin/Query.html");
-        queryLink.setAttribute("data-key", query.id);
+        queryLink.setAttribute("data-key", query._id);
         queryLink.addEventListener("click", storeQueryID);
 
-        queryLink.innerHTML = query.data().Name;
-        Summary.innerHTML = query.data().Message.slice(0, 24);
-        createdAt.innerHTML = query.data().createdAt;
+        queryLink.innerHTML = query.QueryOwner;
+        Summary.innerHTML = query.QueryContent.slice(0, 24);
+        createdAt.innerHTML = query.createdAt;
 
         dashwrapper.appendChild(querrieswrapper);
         querrieswrapper.appendChild(dashQuery);
@@ -232,6 +238,9 @@ const displayQueries = () => {
         queryDesc.appendChild(createdAt);
         queryOwner.appendChild(queryLink);
       });
+    })
+    .catch((err) => {
+      console.log(err);
     });
 };
 
@@ -243,38 +252,41 @@ const checkAuth = () => {
 };
 
 const contactQuery = () => {
-  let Name = document.getElementById("contact-name").value;
+  let QueryOwner = document.getElementById("contact-name").value;
   let Email = document.getElementById("contact-email").value;
-  let Message = document.getElementById("contact-msg").value;
+  let QueryContent = document.getElementById("contact-msg").value;
 
-  db.collection("Queries")
-    .add({
-      Name,
+  axios
+    .post(`${queryRoute}/add`, {
+      QueryOwner,
       Email,
-      Message,
-      createdAt: Date.now(),
+      QueryContent,
     })
-    .then((result) => {
-      alert("Query sent successfully", result);
+    .then((res) => {
+      console.log(res);
+      alert("Query sent successfully");
     })
     .catch((err) => {
-      alert("Error while sending query", err);
+      console.log(err);
+      alert("Error while sending query");
     });
 };
 
-const subscribe = () => {
+const subscribe = async () => {
   let Name = document.getElementById("subscribe-name").value;
   let Email = document.getElementById("subscribe-email").value;
 
-  db.collection("Subscriptions")
-    .add({
+  await axios
+    .post(`${subscriptionRoute}add`, {
       Name,
       Email,
     })
     .then((result) => {
+      alert("Subscription successfull");
       console.log("Subscription successfull", result);
     })
     .catch((err) => {
+      alert("Error subscribing ");
       console.log("Subscription failed", err);
     });
 };
@@ -284,86 +296,49 @@ const register = async () => {
   let Lastname = document.getElementById("lname").value;
   let Email = document.getElementById("user-email").value;
   let Password = document.getElementById("password").value;
-  let Password2 = document.getElementById("password2").value;
+  let retype_Password = document.getElementById("password2").value;
 
-  if (Password === Password2) {
-    await firebase
-      .auth()
-      .createUserWithEmailAndPassword(Email, Password)
-      .then((res) => {
-        db.collection("Users")
-          .add({
-            Firstname,
-            Lastname,
-            Email,
-            Password,
-            createdAt: Date.now(),
-          })
-          .then((result) => {
-            console.log("Upload successfull", result);
-          })
-          .catch((err) => {
-            console.log("Uploading user failed", err);
-          });
-        console.log("details", res);
-        alert("Success registering user");
-        // window.location.replace(`${URI}/Pages/Portfolio.html`);
-      })
-      .catch((error) => {
-        var errorCode = error.code;
-        var errorMessage = error.message;
-        alert(errorMessage);
-      });
-  } else alert("Passwords don't match");
+  await axios
+    .post(`${userRoute}register`, {
+      Firstname,
+      Lastname,
+      Email,
+      Password,
+      retype_Password,
+    })
+    .then((result) => {
+      alert("Registering user successfull");
+      console.log("Upload successfull", result);
+      window.location.replace(`${URI}/Pages/signin.html`);
+    })
+    .catch((err) => {
+      alert("Registering user failed");
+      console.log("Registering user failed", err);
+    });
 };
 
 const login = () => {
   let Email = document.getElementById("login-email").value;
   let Password = document.getElementById("login-pwd").value;
 
-  firebase
-    .auth()
-    .signInWithEmailAndPassword(Email, Password)
+  axios
+    .post(`${userRoute}signin`, { Email, Password })
     .then((user) => {
+      let userData = JSON.parse(atob(user.data.Token.split(".")[1]));
       alert("Login successfull");
       window.localStorage.setItem("User", JSON.stringify(user));
-      if (Email === "admin@admin.com") {
+      if (userData.Role === "admin") {
         window.location.replace(`${URI}/Pages/Admin`);
       } else {
         window.location.replace(`${URI}/Pages/Dashboard.html`);
       }
     })
     .catch((err) => {
-      var errorCode = err.code;
-      var errorMessage = err.message;
-      console.log(errorMessage);
-    });
-};
-
-const altLogin = () => {
-  firebase
-    .auth()
-    .signInWithPopup(googleProvider)
-    .then((res) => {
-      // This gives you a Google Access Token. You can use it to access the Google API.
-      var token = res.credential.accessToken;
-      // The signed-in user info.
-      loggedUser = JSON.stringify(res.user);
-      localStorage.setItem("User", loggedUser);
-      console.log("logged user", loggedUser);
-      window.location.replace(`${URI}/Pages/Dashboard.html`);
-    })
-    .catch((err) => {
-      // Handle Errors here.
-      var errorCode = err.code;
-      var errorMessage = err.message;
-      // The email of the user's account used.
-      var email = err.email;
-      // The firebase.auth.AuthCredential type that was used.
-      var credential = err.credential;
       console.log(err);
     });
 };
+
+const altLogin = () => {};
 
 const displayLoginBtn = () => {
   if (User) {
@@ -378,25 +353,29 @@ const displayLogoutBtn = () => {
 };
 
 const logout = () => {
-  firebase
-    .auth()
-    .signOut()
+  axios
+    .get(`${userRoute}logout`, {
+      headers: {
+        Authorization: `Bearer ${User.data.Token}`,
+      },
+    })
     .then(() => {
-      alert("Successfully signed out");
       localStorage.removeItem("User");
+      alert("Successfully signed out");
       window.location.replace(`${URI}/Pages/Portfolio.html`);
     })
     .catch((err) => {
+      alert("Error occured while logging out");
       console.log("Error while signing out", err);
     });
 };
 
 const addBlog = () => {
-  let BlogTitle = document.getElementById("blogTitle").value;
-  let BlogContent = CKEDITOR.instances.blogContent.getData();
-  let BlogPic = document.getElementById("blogPic").files[0];
+  let Title = document.getElementById("blogTitle").value;
+  let Content = CKEDITOR.instances.blogContent.getData();
+  let Pic = document.getElementById("blogPic").files[0];
 
-  let upload = storage.ref(`Images/${BlogPic.name}`).put(BlogPic);
+  let upload = storage.ref(`Images/${Pic.name}`).put(Pic);
   upload.on(
     "state_changed",
     (snapshot) => {
@@ -408,19 +387,27 @@ const addBlog = () => {
     },
     () => {
       upload.snapshot.ref.getDownloadURL().then((downloadURL) => {
-        db.collection("Blogs")
-          .add({
-            BlogTitle,
-            BlogContent,
-            BlogPic: downloadURL,
-            Comments: [],
-            createdAt: Date(Date.now()),
-          })
+        axios
+          .post(
+            `${blogRoute}add`,
+            {
+              Title,
+              Content,
+              Picture: downloadURL,
+            },
+            {
+              headers: {
+                Authorization: `Bearer ${User.data.Token}`,
+              },
+            }
+          )
           .then((res) => {
             alert("Blog added successfully");
+            window.location.replace(`${URI}/Pages/Admin`);
             console.log("Blog added successfully", res);
           })
           .catch((err) => {
+            alert("Error adding blog");
             console.log("Failed to add blog", err);
           });
       });
@@ -430,73 +417,61 @@ const addBlog = () => {
 
 const addComment = () => {
   let docID = localStorage.getItem("docID");
+  let userData = JSON.parse(localStorage.getItem("User"));
   let commentContent = document.querySelector("#comment").value;
-  let userInfo = getLoggedUser();
-  console.log(userInfo);
-  let commentOwner = `${userInfo.Firstname} ${userInfo.Lastname}`;
+  console.log(userData);
 
-  if (userInfo) {
+  if (userData) {
     if (commentContent) {
-      db.collection("Blogs")
-        .doc(docID)
-        .set(
+      axios
+        .put(
+          `${blogRoute}comment/${docID}`,
           {
-            Comments: [
-              ...Comments,
-              {
-                Owner: commentOwner,
-                Content: commentContent,
-                createdAt: Date.now(),
-              },
-            ],
+            Content: commentContent,
           },
           {
-            merge: true,
+            headers: {
+              Authorization: `Bearer ${userData.data.Token}`,
+            },
           }
         )
         .then((res) => {
+          alert("Comment added successfully");
           console.log("Comment added successfully", res);
         })
         .catch((err) => {
+          alert("Error adding comment");
           console.log("Error", err);
         });
     } else alert("Type comment");
   } else window.location.replace(`${URI}/Pages/Signin.html`);
 };
 
-const getLoggedUser = () => {
-  if (User) {
-    db.collection("Users")
-      .where("Email", "==", User.user.email)
-      .get()
-      .then((querySnapshot) => {
-        console.log(querySnapshot);
-        return querySnapshot;
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  } else return false;
-};
-
-const updateBlog = (e) => {
-  let BlogTitle = document.getElementById("blogTitle").value;
-  let BlogContent = CKEDITOR.instances.blogContent.getData();
+const updateBlog = async (e) => {
+  let Title = document.getElementById("blogTitle").value;
+  let Content = CKEDITOR.instances.blogContent.getData();
   // let BlogPic = document.getElementById("blogPic").value;
   let docID = localStorage.getItem("editID");
-  db.collection("Blogs")
-    .doc(docID)
-    .set(
+  await axios
+    .put(
+      `${blogRoute}${docID}`,
       {
-        BlogTitle,
-        BlogContent,
+        Title,
+        Content,
       },
-      { merge: true }
+      {
+        headers: {
+          Authorization: `Bearer ${User.data.Token}`,
+        },
+      }
     )
     .then((res) => {
+      alert("Blog updated successfully");
+      window.location.replace(`${URI}/Pages/Admin`);
       console.log("Blog updated successfully", res);
     })
     .catch((err) => {
+      alert("Failed to updated blog");
       console.log("Failed to updated blog", err);
     });
 };
@@ -512,21 +487,19 @@ const storeQueryID = (e) => {
 };
 
 const storeEditID = (e) => {
-  console.log(e.target);
   let editID = e.target.getAttribute("data-key");
   localStorage.setItem("editID", editID);
 };
 
-const loadEditContent = () => {
-  let docID = localStorage.getItem("editID");
-  if (docID) {
-    let BlogTitle = document.getElementById("blogTitle");
-    db.collection("Blogs")
-      .doc(docID)
-      .get()
-      .then((doc) => {
-        BlogTitle.value = doc.data().BlogTitle;
-        CKEDITOR.instances.blogContent.setData(doc.data().BlogContent);
+const loadEditContent = async () => {
+  let editID = localStorage.getItem("editID");
+  if (editID) {
+    let Title = document.getElementById("blogTitle");
+    await axios
+      .get(`${blogRoute}${editID}`)
+      .then((res) => {
+        Title.value = res.data.Blog.Title;
+        CKEDITOR.instances.blogContent.setData(res.data.Blog.Content);
       })
       .catch((err) => {
         console.log(err);
@@ -536,16 +509,14 @@ const loadEditContent = () => {
 
 const loadBlog = async () => {
   let docID = localStorage.getItem("docID");
-  console.log(docID);
 
   let detailsWrapper = document.getElementById("blog-details");
   let contentWrapper = document.getElementsByClassName("blog-content")[0];
   let commentsWrapper = document.getElementsByClassName("comments-wrapper")[0];
 
-  await db
-    .collection("Blogs")
-    .doc(docID)
-    .onSnapshot((snapshot) => {
+  await axios
+    .get(`${blogRoute}${docID}`)
+    .then((res) => {
       let commentWrapper = document.createElement("div");
       commentWrapper.setAttribute("class", "comment");
       // let BlogPic = document.getElementsByClassName("blogPic").value;
@@ -560,16 +531,13 @@ const loadBlog = async () => {
       detailsWrapper.appendChild(createdAt);
       contentWrapper.appendChild(blogContent);
 
-      blogTitle.innerHTML = snapshot.data().BlogTitle;
-      createdAt.innerHTML = `posted on ${snapshot.data().createdAt}`;
-      blogContent.innerHTML = snapshot.data().BlogContent;
+      blogTitle.innerHTML = res.data.Blog.Title;
+      createdAt.innerHTML = `posted on ${res.data.Blog.createdAt}`;
+      blogContent.innerHTML = res.data.Blog.Content;
 
-      snapshot.data().Comments.forEach((comment) => {
-        // commentOwner.innerHTML = "Jon Doe";
+      res.data.Blog.Comments.forEach((comment) => {
         commentOwner.innerHTML = comment.Owner;
-        // commentContent.innerHTML = "It's my first comment!";
         commentContent.innerHTML = comment.Content;
-        // commentTime.innerHTML = "12 min ago";
         commentTime.innerHTML = comment.createdAt;
 
         commentsWrapper.appendChild(commentWrapper);
@@ -577,6 +545,9 @@ const loadBlog = async () => {
         commentWrapper.appendChild(commentContent);
         commentWrapper.appendChild(commentTime);
       });
+    })
+    .catch((err) => {
+      console.log(err);
     });
 };
 
@@ -587,16 +558,19 @@ const loadQuery = async () => {
   let descWrapper = document.querySelector(".query-desc");
   let contentWrapper = document.querySelector(".query-content");
 
-  await db
-    .collection("Queries")
-    .doc(queryID)
-    .onSnapshot((snapshot) => {
+  await axios
+    .get(`${queryRoute}${queryID}`, {
+      headers: {
+        Authorization: `Bearer ${User.data.Token}`,
+      },
+    })
+    .then((res) => {
       let queryOwner = document.createElement("h1");
       let createdAt = document.createElement("p");
       let queryContent = document.createElement("p");
       let emailPara = document.createElement("p");
       let emailLink = document.createElement("a");
-      emailLink.setAttribute("href", `mailto:${snapshot.data().Email}`);
+      emailLink.setAttribute("href", `mailto:${res.data.Query.Email}`);
 
       queryWrapper.appendChild(descWrapper);
       queryWrapper.appendChild(contentWrapper);
@@ -606,74 +580,135 @@ const loadQuery = async () => {
       contentWrapper.appendChild(emailPara);
       emailPara.appendChild(emailLink);
 
-      queryOwner.innerHTML = snapshot.data().Name;
-      queryContent.innerHTML = snapshot.data().Message;
-      emailLink.innerHTML = snapshot.data().Email;
-      createdAt.innerHTML = `posted on ${snapshot.data().createdAt}`;
+      queryOwner.innerHTML = res.data.Query.QueryOwner;
+      queryContent.innerHTML = res.data.Query.QueryContent;
+      emailLink.innerHTML = res.data.Query.Email;
+      createdAt.innerHTML = `posted on ${res.data.Query.createdAt}`;
     });
 };
 
 const loadProfile = async () => {
-  await db
-    .collection("Blogs")
-    .get()
-    .then((snap) => {
-      snap.forEach((doc) => {
-        allBlogs.push(doc.data());
-      });
-    })
-    .catch((err) => {
-      console.log(err);
-    });
-  localStorage.setItem("Blogs", JSON.stringify(allBlogs));
+  let adminData = JSON.parse(atob(User.data.Token.split(".")[1]));
   let profilePic = document.getElementsByClassName("profile-image")[0];
   let adminEmail = document.getElementById("adm-email");
   let adminPassword = document.getElementById("adm-pwd");
   let blogCount = document.getElementsByClassName("blog-count")[0];
   let img = document.createElement("img");
-  img.setAttribute("src", "../../Assets/profile.svg");
+  img.setAttribute("class", "old-profile-pic");
+  img.setAttribute("src", `${adminData.Picture}`);
   img.setAttribute("alt", "Profile Pic");
   img.setAttribute("width", "120px");
   img.setAttribute("height", "120px");
 
   profilePic.prepend(img);
-  adminEmail.value = "dummy@gmail.com";
-  adminPassword.value = "dummy123";
-  blogCount.innerHTML = allBlogs.length;
+  console.log(adminData);
+  adminEmail.value = adminData.Email;
+  adminPassword.value = adminData.Password;
+
+  await axios
+    .get(`${blogRoute}`)
+    .then((res) => {
+      blogCount.innerHTML = res.data.Blogs.length;
+    })
+    .catch((err) => {
+      console.log(err);
+    });
 };
 
-const updateProfile = async () => {
-  let profilePic = document.getElementById("blogTitle").files[0];
-  let adminEmail = document.getElementById("blogContent").value;
-  let adminPassword = document.getElementById("blogPic").value;
-
-  await db
-    .collection("Users")
-    .doc()
-    .update({
-      profilePic,
+const getProfileData = async () => {
+  let adminEmail = document.getElementById("adm-email").value;
+  let adminPassword = document.getElementById("adm-pwd").value;
+  let oldProfilePic = JSON.parse(atob(User.data.Token.split(".")[1])).Picture;
+  let newProfilePic = document.getElementById("new-profile-pic").files[0];
+  if (oldProfilePic && !newProfilePic) {
+    return uploadProfileData({
       adminEmail,
       adminPassword,
-    })
+      picURL: oldProfilePic,
+    });
+  }
+  // let picPromise = await uploadImage(newProfilePic);
+  // console.log("promise", picPromise);
+  // if (picPromise) {
+  // picPromise
+  // .then((downloadURL) => {
+  // uploadProfileData({ adminEmail, adminPassword, picURL: downloadURL });
+  // })
+  // .catch((err) => {
+  //   alert("Error uploading picture");
+  //   console.log(err);
+  // });
+  // };
+  else if (newProfilePic) {
+    uploadImage({ adminEmail, adminPassword, newProfilePic });
+  } else return uploadProfileData({ adminEmail, adminPassword, picURL: null });
+};
+
+const uploadImage = ({ adminEmail, adminPassword, newProfilePic }) => {
+  let upload = storage.ref(`Images/Pic`).put(newProfilePic);
+  upload.on(
+    "state_changed",
+    (snapshot) => {
+      let progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+      console.log(`Progress is ${progress}%`);
+    },
+    (err) => {
+      console.log(err);
+    },
+    () => {
+      upload.snapshot.ref.getDownloadURL().then((downloadURL) => {
+        // return downloadURL;
+        uploadProfileData({ adminEmail, adminPassword, picURL: downloadURL });
+      });
+    }
+  );
+};
+
+const uploadProfileData = async (args) => {
+  console.log(args);
+  let { adminEmail, adminPassword, picURL } = args;
+  let { _id } = JSON.parse(atob(User.data.Token.split(".")[1]));
+  let userID = _id;
+
+  axios
+    .put(
+      `${userRoute}edit/${userID}`,
+      {
+        Picture: picURL,
+        Email: adminEmail,
+        Password: adminPassword,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${User.data.Token}`,
+        },
+      }
+    )
     .then((res) => {
+      alert("Profile updated successfully");
+      // window.location.replace(`${URI}/Pages/Admin`);
       console.log("Profile updated successfully", res);
     })
     .catch((err) => {
+      alert("Failed to updated profile");
       console.log("Failed to updated profile", err);
     });
 };
 
 const deleteBlog = async (e) => {
   let docID = e.target.getAttribute("data-key");
-  await db
-    .collection("Blogs")
-    .doc(docID)
-    .delete()
+  await axios
+    .delete(`${blogRoute}${docID}`, {
+      headers: {
+        Authorization: `Bearer ${User.data.Token}`,
+      },
+    })
     .then(() => {
-      console.log("Blog removed successfully");
+      alert("Blog removed successfully");
       window.location.reload();
     })
     .catch((err) => {
+      alert("Failed to remove blog");
       console.log("Failed to remove blog", err);
     });
 };
